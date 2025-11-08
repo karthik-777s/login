@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — College Portal</title>
+  <style>
+    :root{
+      --bg:#0f1724; /* dark slate */
+      --card:#0b1220;
+      --accent:#4f46e5;
+      --muted:#9aa4b2;
+      --success:#10b981;
+      --danger:#ef4444;
+      --glass: rgba(255,255,255,0.03);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      background: linear-gradient(180deg, #071026 0%, #071a2a 60%);
+      color:#e6eef6;display:flex;align-items:center;justify-content:center;padding:24px;
+    }
+
+    .container{width:100%;max-width:420px}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:14px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.03)
+    }
+
+    h1{font-size:20px;margin:0 0 6px}
+    p.lead{color:var(--muted);font-size:13px;margin:0 0 18px}
+
+    label{display:block;font-size:13px;margin-bottom:6px;color:#dbe9ff}
+    input[type="text"],input[type="password"],input[type="email"]{
+      width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;font-size:14px;outline:none
+    }
+    .field{margin-bottom:14px}
+
+    .row{display:flex;gap:10px}
+    .remember{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer;width:100%;font-size:15px
+    }
+    .btn:active{transform:translateY(1px)}
+
+    .secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:8px}
+
+    .small{font-size:12px;color:var(--muted)}
+
+    .hr{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent);margin:18px 0;border-radius:2px}
+
+    .error{color:var(--danger);font-size:13px;margin-top:8px}
+    .success{color:var(--success);font-size:13px;margin-top:8px}
+
+    .help{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+
+    .show-pass{background:transparent;border:0;color:var(--muted);cursor:pointer;padding:6px;border-radius:6px}
+
+    footer{margin-top:18px;text-align:center;font-size:12px;color:var(--muted)}
+
+    /* small responsive tweak */
+    @media (max-width:420px){.card{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form id="loginForm" class="card" action="#" method="POST" novalidate>
+      <h1>Sign in to your account</h1>
+      <p class="lead">Enter your college credentials to continue — session will time out after inactivity.</p>
+
+      <div class="field">
+        <label for="email">Email or username</label>
+        <input id="email" name="email" type="email" inputmode="email" autocomplete="username" placeholder="you@college.edu" required />
+        <div id="emailError" class="error" aria-live="polite" style="display:none"></div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <div style="position:relative;display:flex;align-items:center;gap:8px">
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Choose a strong password" required minlength="6" style="padding-right:72px" />
+          <button type="button" id="togglePass" class="show-pass" aria-label="Show password">Show</button>
+        </div>
+        <div id="passwordError" class="error" aria-live="polite" style="display:none"></div>
+      </div>
+
+      <div class="row" style="align-items:center;justify-content:space-between;margin-bottom:8px">
+        <label class="remember"><input type="checkbox" name="remember" /> Remember me</label>
+        <a href="#" class="small">Forgot password?</a>
+      </div>
+
+      <button class="btn" type="submit">Sign in</button>
+
+      <div class="hr"></div>
+
+      <div class="help">
+        <div class="small">Need an account? <a href="#">Contact IT</a></div>
+        <div class="small">Secure connection: <strong style="color:var(--muted)">TLS</strong></div>
+      </div>
+
+      <div id="result" role="status" aria-live="polite" style="display:none"></div>
+
+      <footer>By signing in you agree to college policies.</footer>
+    </form>
+  </div>
+
+  <script>
+    (function(){
+      const form = document.getElementById('loginForm');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const toggle = document.getElementById('togglePass');
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+      const result = document.getElementById('result');
+
+      // toggle show/hide password
+      toggle.addEventListener('click', ()=>{
+        if(password.type === 'password'){
+          password.type = 'text';
+          toggle.textContent = 'Hide';
+        } else {
+          password.type = 'password';
+          toggle.textContent = 'Show';
+        }
+      });
+
+      function showError(el, msg){ el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
+
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        // reset
+        showError(emailError,''); showError(passwordError,''); result.style.display='none';
+
+        let valid = true;
+        const emailVal = email.value.trim();
+        const passVal = password.value;
+
+        // basic email validation (accepts username@ or plain username fallback)
+        const emailLike = /@/.test(emailVal);
+        if(!emailVal){ showError(emailError,'Please enter your email or username.'); valid=false }
+        else if(emailLike){
+          // stricter check when it looks like an email
+          const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if(!re.test(emailVal)){ showError(emailError,'Please enter a valid email address.'); valid=false }
+        }
+
+        if(!passVal){ showError(passwordError,'Please enter your password.'); valid=false }
+        else if(passVal.length < 6){ showError(passwordError,'Password must be at least 6 characters.'); valid=false }
+
+        if(!valid) return;
+
+        // UI: show working
+        result.style.display='block'; result.className='small'; result.textContent='Signing in...';
+
+        // Replace with actual POST to your server. Example below uses fetch to POST JSON.
+        // NOTE: For real deployments, use HTTPS, CSRF protection, server-side validation, and do not send passwords in plain JSON unless the server expects it securely.
+
+        fetch(form.action || '#', {
+          method: form.method || 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailVal, password: passVal, remember: form.remember.checked })
+        }).then(r=>{
+          // If you don't have a backend, fetch will fail; handle gracefully.
+          if(!r.ok) throw new Error('Authentication failed');
+          return r.json();
+        }).then(data=>{
+          result.className='success'; result.textContent = data.message || 'Signed in successfully';
+          // TODO: redirect on success, e.g. window.location = '/dashboard'
+        }).catch(err=>{
+          result.className='error'; result.textContent = 'Unable to sign in. (This demo does not include a real backend)';
+        });
+
+      });
+
+      // small accessibility: focus first field on load
+      email.focus();
+    })();
+  </script>
+</body>
+</html>
