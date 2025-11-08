@@ -3,179 +3,146 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Login — College Portal</title>
+  <title>TCET — Sign In</title>
   <style>
     :root{
-      --bg:#0f1724; /* dark slate */
-      --card:#0b1220;
-      --accent:#4f46e5;
-      --muted:#9aa4b2;
-      --success:#10b981;
-      --danger:#ef4444;
-      --glass: rgba(255,255,255,0.03);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --bg:#070607;
+      --card:#fff;
+      --primary:#e91e36; /* match logo red */
+      --accent:#ffd200;  /* match logo yellow */
+      --muted:#6b7280;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
     *{box-sizing:border-box}
     html,body{height:100%;margin:0}
     body{
-      background: linear-gradient(180deg, #071026 0%, #071a2a 60%);
-      color:#e6eef6;display:flex;align-items:center;justify-content:center;padding:24px;
+      background: linear-gradient(180deg,#050507 0%, #0b0b10 100%);
+      color:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;
     }
 
-    .container{width:100%;max-width:420px}
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:14px;padding:28px;box-shadow:0 8px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);border:1px solid rgba(255,255,255,0.03)
-    }
+    .wrap{width:100%;max-width:420px}
+    .card{background:linear-gradient(180deg, #ffffff 0%, #f7f7f9 100%);border-radius:14px;padding:26px;box-shadow:0 10px 30px rgba(2,6,23,0.5);border:1px solid rgba(0,0,0,0.06)}
 
-    h1{font-size:20px;margin:0 0 6px}
-    p.lead{color:var(--muted);font-size:13px;margin:0 0 18px}
+    .logo-row{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+    .logo-row img{height:74px;width:auto;border-radius:6px}
+    h1{font-size:20px;margin:0}
+    .lead{font-size:13px;color:var(--muted);margin-top:4px}
 
-    label{display:block;font-size:13px;margin-bottom:6px;color:#dbe9ff}
+    label{display:block;font-size:13px;margin-bottom:6px;color:#111827}
     input[type="text"],input[type="password"],input[type="email"]{
-      width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;font-size:14px;outline:none
+      width:100%;padding:10px 12px;border-radius:8px;border:1px solid rgba(15,15,15,0.06);background:#fff;color:#111827;font-size:14px;outline:none
     }
-    .field{margin-bottom:14px}
+    .field{margin-bottom:12px}
 
     .row{display:flex;gap:10px}
     .remember{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
 
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer;width:100%;font-size:15px
-    }
+    .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:10px;border:0;background:var(--primary);color:white;font-weight:600;cursor:pointer;width:100%;font-size:15px}
     .btn:active{transform:translateY(1px)}
 
-    .secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:8px}
-
     .small{font-size:12px;color:var(--muted)}
+    .hr{height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,0,0.06),transparent);margin:16px 0;border-radius:2px}
 
-    .hr{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent);margin:18px 0;border-radius:2px}
+    .error{color:#b91c1c;font-size:13px;margin-top:8px}
+    .success{color:#059669;font-size:13px;margin-top:8px}
 
-    .error{color:var(--danger);font-size:13px;margin-top:8px}
-    .success{color:var(--success);font-size:13px;margin-top:8px}
+    footer{margin-top:12px;text-align:center;font-size:12px;color:var(--muted)}
 
-    .help{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
-
-    .show-pass{background:transparent;border:0;color:var(--muted);cursor:pointer;padding:6px;border-radius:6px}
-
-    footer{margin-top:18px;text-align:center;font-size:12px;color:var(--muted)}
-
-    /* small responsive tweak */
-    @media (max-width:420px){.card{padding:20px}}
+    @media (max-width:420px){.card{padding:18px}.logo-row img{height:62px}}
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap">
     <form id="loginForm" class="card" action="#" method="POST" novalidate>
-      <h1>Sign in to your account</h1>
-      <p class="lead">Enter your college credentials to continue — session will time out after inactivity.</p>
+      <div class="logo-row">
+        <!-- local image provided in canvas environment -->
+        <img src="/mnt/data/TCET-25-Years-Logo.png" alt="Thiruvalluvar College of Engineering and Technology logo" />
+        <div>
+          <h1>Thiruvalluvar College of Engineering &amp; Technology</h1>
+          <div class="lead">Sign in to access student &amp; staff services</div>
+        </div>
+      </div>
 
       <div class="field">
-        <label for="email">Email or username</label>
-        <input id="email" name="email" type="email" inputmode="email" autocomplete="username" placeholder="you@college.edu" required />
-        <div id="emailError" class="error" aria-live="polite" style="display:none"></div>
+        <label for="username">Email or Username</label>
+        <input id="username" name="username" type="email" inputmode="email" autocomplete="username" placeholder="you@tcet.edu.in or username" required />
+        <div id="userError" class="error" style="display:none" aria-live="polite"></div>
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <div style="position:relative;display:flex;align-items:center;gap:8px">
-          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Choose a strong password" required minlength="6" style="padding-right:72px" />
-          <button type="button" id="togglePass" class="show-pass" aria-label="Show password">Show</button>
-        </div>
-        <div id="passwordError" class="error" aria-live="polite" style="display:none"></div>
+        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required minlength="6" />
+        <div id="passError" class="error" style="display:none" aria-live="polite"></div>
       </div>
 
-      <div class="row" style="align-items:center;justify-content:space-between;margin-bottom:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
         <label class="remember"><input type="checkbox" name="remember" /> Remember me</label>
         <a href="#" class="small">Forgot password?</a>
       </div>
 
-      <button class="btn" type="submit">Sign in</button>
+      <button class="btn" type="submit">Sign In</button>
 
       <div class="hr"></div>
 
-      <div class="help">
-        <div class="small">Need an account? <a href="#">Contact IT</a></div>
-        <div class="small">Secure connection: <strong style="color:var(--muted)">TLS</strong></div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="small">New user? <a href="#">Contact IT</a></div>
+        <div class="small">Secure: <strong style="color:var(--muted)">TLS</strong></div>
       </div>
 
       <div id="result" role="status" aria-live="polite" style="display:none"></div>
-
-      <footer>By signing in you agree to college policies.</footer>
+      <footer>By signing in you agree to college ICT policies.</footer>
     </form>
   </div>
 
   <script>
     (function(){
       const form = document.getElementById('loginForm');
-      const email = document.getElementById('email');
-      const password = document.getElementById('password');
-      const toggle = document.getElementById('togglePass');
-      const emailError = document.getElementById('emailError');
-      const passwordError = document.getElementById('passwordError');
+      const user = document.getElementById('username');
+      const pass = document.getElementById('password');
+      const userError = document.getElementById('userError');
+      const passError = document.getElementById('passError');
       const result = document.getElementById('result');
 
-      // toggle show/hide password
-      toggle.addEventListener('click', ()=>{
-        if(password.type === 'password'){
-          password.type = 'text';
-          toggle.textContent = 'Hide';
-        } else {
-          password.type = 'password';
-          toggle.textContent = 'Show';
-        }
-      });
-
-      function showError(el, msg){ el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
+      function showError(el,msg){ el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
 
       form.addEventListener('submit', (e)=>{
         e.preventDefault();
-        // reset
-        showError(emailError,''); showError(passwordError,''); result.style.display='none';
+        showError(userError,''); showError(passError,''); result.style.display='none';
 
-        let valid = true;
-        const emailVal = email.value.trim();
-        const passVal = password.value;
+        let ok = true;
+        const u = user.value.trim();
+        const p = pass.value;
 
-        // basic email validation (accepts username@ or plain username fallback)
-        const emailLike = /@/.test(emailVal);
-        if(!emailVal){ showError(emailError,'Please enter your email or username.'); valid=false }
-        else if(emailLike){
-          // stricter check when it looks like an email
+        if(!u){ showError(userError,'Please enter email or username.'); ok = false }
+        else if(u.includes('@')){
           const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if(!re.test(emailVal)){ showError(emailError,'Please enter a valid email address.'); valid=false }
+          if(!re.test(u)){ showError(userError,'Enter a valid email address.'); ok = false }
         }
 
-        if(!passVal){ showError(passwordError,'Please enter your password.'); valid=false }
-        else if(passVal.length < 6){ showError(passwordError,'Password must be at least 6 characters.'); valid=false }
+        if(!p){ showError(passError,'Please enter your password.'); ok = false }
+        else if(p.length < 6){ showError(passError,'Password must be 6+ characters.'); ok = false }
 
-        if(!valid) return;
+        if(!ok) return;
 
-        // UI: show working
         result.style.display='block'; result.className='small'; result.textContent='Signing in...';
 
-        // Replace with actual POST to your server. Example below uses fetch to POST JSON.
-        // NOTE: For real deployments, use HTTPS, CSRF protection, server-side validation, and do not send passwords in plain JSON unless the server expects it securely.
-
+        // Replace with your backend endpoint. Always use HTTPS, server-side validation and CSRF protection.
         fetch(form.action || '#', {
           method: form.method || 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: emailVal, password: passVal, remember: form.remember.checked })
+          body: JSON.stringify({ username: u, password: p, remember: form.remember.checked })
         }).then(r=>{
-          // If you don't have a backend, fetch will fail; handle gracefully.
-          if(!r.ok) throw new Error('Authentication failed');
+          if(!r.ok) throw new Error('Auth failed');
           return r.json();
         }).then(data=>{
           result.className='success'; result.textContent = data.message || 'Signed in successfully';
-          // TODO: redirect on success, e.g. window.location = '/dashboard'
-        }).catch(err=>{
-          result.className='error'; result.textContent = 'Unable to sign in. (This demo does not include a real backend)';
+          // redirect if needed: window.location = data.redirect || '/dashboard';
+        }).catch(()=>{
+          result.className='error'; result.textContent = 'Unable to sign in (demo page).';
         });
-
       });
 
-      // small accessibility: focus first field on load
-      email.focus();
+      user.focus();
     })();
   </script>
 </body>
