@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TCET Search — Submit to Formspree</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#f6f8fb}
+    .card{width:100%;max-width:720px;padding:28px;border-radius:12px;background:white;box-shadow:0 6px 30px rgba(2,6,23,0.08)}
+    h2{margin:0 0 8px}
+    p.lead{color:#6b7280;margin:0 0 18px}
+    form{display:flex;gap:10px;align-items:center}
+    input[type="search"]{
+      flex:1;padding:12px 14px;border-radius:8px;border:1px solid #e6e9ef;font-size:16px;outline:none
+    }
+    button{padding:10px 16px;border-radius:8px;border:0;background:#e91e36;color:white;font-weight:600;cursor:pointer}
+    .small{font-size:13px;color:#6b7280;margin-top:12px}
+    .result{margin-top:12px;font-size:14px}
+    .error{color:#b91c1c}
+    .success{color:#059669}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h2>Search / Submit</h2>
+    <p class="lead">Type anything and press Enter (or click Search). The input will be sent to Formspree.</p>
+
+    <!-- NOTE:
+         Replace YOUR_FORM_ID below with the ID from Formspree.
+         Example form action URL: https://formspree.io/f/mnqxyzab
+    -->
+    <form id="searchForm" action="https://formspree.io/f/meovjavr" method="POST" novalidate>
+      <!-- The visible search input -->
+      <input id="query" name="query" type="search" placeholder="Type your search or message..." autocomplete="off" required />
+
+      <!-- Helpful hidden fields you can include:
+           _subject - email subject rendered by Formspree email
+           _replyto - set a reply-to address if you collect an email
+           _language - optional, 'en' etc.
+      -->
+      <input type="hidden" name="_subject" value="New search submission from TCET site" />
+      <input type="hidden" name="_language" value="en" />
+
+      <!-- If you want to use the simple form submit (page reload), just let the form submit normally.
+           The JavaScript below intercepts submit to call the AJAX endpoint and show inline status.
+      -->
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="result" class="result" aria-live="polite" style="display:none"></div>
+    <div class="small">This page uses <strong>Formspree</strong> to collect inputs. See configuration steps below.</div>
+  </div>
+
+  <script>
+    (function(){
+      const form = document.getElementById('searchForm');
+      const input = document.getElementById('query');
+      const result = document.getElementById('result');
+
+      // Configure this to match your Formspree ID (it's already in the form action)
+      // If you prefer to use the fetch URL directly, you can derive it:
+      const formAction = form.action; // e.g. https://formspree.io/f/YOUR_FORM_ID
+
+      // Helper to show messages
+      function show(msg, type){
+        result.style.display = 'block';
+        result.className = 'result ' + (type === 'error' ? 'error' : 'success');
+        result.textContent = msg;
+      }
+
+      // Intercept submit to use AJAX (prevents page reload)
+      form.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        result.style.display = 'none';
+        const q = input.value.trim();
+
+        if(!q){
+          show('Please enter a search term.', 'error');
+          input.focus();
+          return;
+        }
+
+        show('Sending...', ''); // temporary
+
+        // Build payload — name the field(s) exactly how you want them to appear in Formspree/email
+        const payload = {
+          query: q,
+          // optional: add other fields here (e.g., userAgent, page, timestamp)
+          page: window.location.href,
+          userAgent: navigator.userAgent
+        };
+
+        try {
+          // Submit JSON to Formspree endpoint
+          const res = await fetch(formAction, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if(res.ok){
+            // Formspree returns JSON with a 'ok' boolean or message (may vary)
+            show('Thanks — your input was received.', 'success');
+            // Optionally clear the input
+            input.value = '';
+          } else {
+            // Try to parse server error
+            const data = await res.json().catch(()=>null);
+            const msg = data && data.error ? data.error : 'Submission failed.';
+            show(msg, 'error');
+          }
+        } catch(err){
+          show('Network error: could not submit. Try again later.', 'error');
+          console.error(err);
+        }
+      });
+
+      // Optional: pressing ESC clears the field
+      input.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') input.value = '';
+      });
+
+      // focus the input when page loads
+      input.focus();
+    })();
+  </script>
+</body>
+</html>
